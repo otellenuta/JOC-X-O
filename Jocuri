@@ -1,21 +1,19 @@
 int[,] tabla = new int[3,3]; 
  
-while (VerificaCastig(tabla) == 0) //ciclul while, atat timp cat functia VerificaCastig returneaza 0, intram in functia MiscareJucator 1/2
+while (VerificaCastig(tabla) == 0 && JocFinisat(tabla) == false)
 {
     MiscareJucator(tabla, 1);
     if (VerificaCastig(tabla) != 0 || JocFinisat(tabla))
-        break; //daca dupa prima miscare, functia VerificaCastig returneaza != 0 sau functia JosFinisat returneaza true, jocul se finiseaza.
+        break;
     MiscareJucator(tabla, 2);
 }
  
- 
-static int VerificaCastig(int[,] tabla) //Functia VerificaCastig, unde se verifica randuri, coloane, diagonale
+static int VerificaCastig(int[,] tabla)
 {
-    bool verificare = false;
-    //verificam randurile   
+    bool verificare = false; 
     for (int i = 0; i < tabla.GetLength(0); i++)
     {
-        verificare = true;  //se va reseta conditia true la fiecare rand!!!
+        verificare = true;
         for (int j = 0; j < tabla.GetLength(1) - 1; j++)
         {
             if (tabla[i, j] != tabla[i, j+1])
@@ -29,11 +27,10 @@ static int VerificaCastig(int[,] tabla) //Functia VerificaCastig, unde se verifi
             return tabla[i,0];
         }
     }
- 
-    //Verificam coloanele
+
     for (int j = 0; j < tabla.GetLength(1); j++)
     {
-        verificare = true;  //se va reseta conditia true la fiecare coloana!!!
+        verificare = true;
         for (int i = 0; i < tabla.GetLength(0)-1; i++)
         {
             if (tabla[i, j] != tabla[i + 1, j])
@@ -47,18 +44,16 @@ static int VerificaCastig(int[,] tabla) //Functia VerificaCastig, unde se verifi
             return tabla[0, j];
         }
     }
- 
     
-    while (TablaPatrata(tabla)) //initial vom verifica daca tabla corespunde cerintelor lungime=latime, ca sa putem controla diagonalele
+    if (TablaPatrata(tabla) == true)
     {
-        //verificam diagonala principala
-        verificare = true; //se va reseta conditia true initial pentru diagonala!!!
+        verificare = true; 
         for (int i = 0; i < tabla.GetLength(0) - 1; i++)
         {
             if (tabla[i, i] != tabla[i + 1, i + 1])
             {
                 verificare = false;
-                break; //daca gasim o divergenta, iesim din ciclu.
+                break; 
             }
         }
         if (verificare == true && tabla[tabla.GetLength(0) - 1, tabla.GetLength(0) - 1] != 0)
@@ -66,15 +61,14 @@ static int VerificaCastig(int[,] tabla) //Functia VerificaCastig, unde se verifi
             Console.WriteLine("Jucatorul " + TransformaXsau0(tabla[0, 0]) + " a castigat!");
             return tabla[0, 0];
         }
- 
-        //verificam diagonala secundara
-        verificare = true; //se va reseta conditia true initial pentru diagonala secundara!!!
+
+        verificare = true; 
         for (int i = 0; i < tabla.GetLength(0) - 1; i++)
         {
             if (tabla[i, tabla.GetLength(0) - i - 1] != tabla[i + 1, tabla.GetLength(0) - (i + 1) - 1])
             {
                 verificare = false;
-                break; //daca gasim o divergenta iesim din ciclu.
+                break; 
             }
         }
         if (verificare == true && tabla[tabla.GetLength(0) - 1, 0] != 0)
@@ -82,64 +76,57 @@ static int VerificaCastig(int[,] tabla) //Functia VerificaCastig, unde se verifi
             Console.WriteLine("Jucatorul " + TransformaXsau0(tabla[0, tabla.GetLength(0) - 1]) + " a castrigat!");
             return tabla[0, tabla.GetLength(0) - 1];
         }
-        break;
     }
-    return 0; //in cazul ca nu a fost depistat castigatorul.
+    return 0; 
 }
  
-static bool TablaPatrata(int[,] tabla) //Functie pentru a concretiza daca tabla este patrata, lungimea = latimea, pentru a verifica diagonalele, de altfel se vor verifica numai randurile si coloanele.
+static bool TablaPatrata(int[,] tabla) 
 {
     if(tabla.GetLength(0) != tabla.GetLength(1))
     {
-        return false; //daca lungimile sunt diferite, lungime != latime, returneaza false.
+        return false; 
     }    
     return true;
 }   
  
- 
-void MiscareJucator(int[,] tabla, int jucator)//functia nu returneaza nimic!!!                                                  //Functia MiscareJucator unde:
-{                                                                                                                               //utilizatorul primeste un mesaj ca sa introduca randul sau coloana,                                                                                                                                                          
-    int rand, coloana;                                                                                                          //dupa care acestea se controleaza sa fie in limitele tablii,                                                                                                    
-    do                                                                                                                          //dupa care vom controla daca e libera celula, vom afisa tabla dupa fiecare miscare
-    {                                                                                                                           //vom controla daca mai sunt celule libere, daca nu - jocul se finiseaza.
+void MiscareJucator(int[,] tabla, int jucator)                                                  
+{                                                                                                                                                                                                                                                                                         
+    int rand, coloana;                                                                                                                                                                                                              
+    do
+    {                                                                                                                           
         Console.WriteLine("Jucatorul " + jucator + ", introduceti randul si coloana la care vreti sa plasati caracterul");  
         GetRandSiColoana(out rand, out coloana); 
- 
-        //daca valorile introduse pentru rand si coloana se afla in afara limitelor, afisam valori invalide si reluam ciclul do-while
         if (rand >= tabla.GetLength(0) || coloana >= tabla.GetLength(1))
         {
             Console.WriteLine("Valori invalide, mai incearca!");
             continue;
         }
-        //daca functia AdaugaXSauO permite a ocupa o celula atunci finisam ciclul do-while
         if (AdaugaXSauO(tabla, jucator, rand, coloana))
         {
             break;
         }
     }
-    while (true);   //Condiția care este evaluată după executarea blocului de cod. Dacă această condiție este adevărată (true), blocul de cod va fi executat din nou.
-    AfiseazaTabla(tabla); //dupa fiecare celula ocupata afisam tabla
+    while (true);   
+    AfiseazaTabla(tabla);
  
-    while (JocFinisat(tabla)) //daca functia JocFinisat returneaza true, vom afisa mesajul de mai jos si iesim din ciclu while
+    if (JocFinisat(tabla)) 
     {
+        Console.WriteLine();
         Console.WriteLine("Miscarile s-au finisat!");
         Console.WriteLine();
-        Console.WriteLine("JOC FINISAT!");
-        Console.WriteLine();
-        return;    //iesi din functie.       
+        Console.WriteLine("JOC FINISAT! INCEPETI ALT JOC");
+        return;           
     }
 }
  
  
-void GetRandSiColoana(out int rand, out int coloana)//Functie GetRandSiColoana nu returneaza nimic!!!
-                                                    //vom permite utilizatorului sa introduca randul si coloana
+void GetRandSiColoana(out int rand, out int coloana)
 {
     rand = int.Parse(Console.ReadLine());
     coloana = int.Parse(Console.ReadLine());
 }
  
- 
-static bool AdaugaXSauO(int[,] tabla, int caracter, int rand, int coloana) //functie unde controlez celula goala, in caz contrar afisez "pozitia ocupata"
+static bool AdaugaXSauO(int[,] tabla, int caracter, int rand, int coloana) 
 {   
     if (tabla[rand, coloana] == 0)
     {
@@ -147,14 +134,14 @@ static bool AdaugaXSauO(int[,] tabla, int caracter, int rand, int coloana) //fun
         return true;
     }
     else 
-    { //verific daca mai sunt celule libere si afisez posibilitatea de a mai incerca odata!
+    { 
         for (int i = 0; i < tabla.GetLength(0); i++)
         {
             for (int j = 0; j < tabla.GetLength(1); j++)
             {
                 if (tabla[i, j] == 0)
                 {
-                    Console.WriteLine("Pozitie ocupata, mai incearca!");
+                    Console.WriteLine("Incearca alte pozitii!");
                     Console.WriteLine();
                     return false;
                 }               
@@ -163,9 +150,8 @@ static bool AdaugaXSauO(int[,] tabla, int caracter, int rand, int coloana) //fun
     }
     return false;
 }
- 
- 
-static char TransformaXsau0(int numar) //Functie TransformaXsau0 care transforma din 1 in x si 2 in O pentru a afisa castigatorul
+  
+static char TransformaXsau0(int numar)
 {
     if (numar == 1)
     {
@@ -177,11 +163,9 @@ static char TransformaXsau0(int numar) //Functie TransformaXsau0 care transforma
     }
     return '-';
 }
- 
- 
-static bool JocFinisat(int[,] tabla) //functie care ar merge prin toate celulele si daca toate sunt ocupate sa nu mai ofere posibilitatea de a pune valori noi
+  
+static bool JocFinisat(int[,] tabla)
 {
-    bool jocfinisat = true;
     for (int i = 0; i < tabla.GetLength(0); i++)
     {
         for (int j = 0; j < tabla.GetLength(1); j++)
@@ -192,15 +176,10 @@ static bool JocFinisat(int[,] tabla) //functie care ar merge prin toate celulele
             }
         }                  
     }
-    if (jocfinisat == true)
-    {        
-        Console.WriteLine();
-    }
     return true;
 }
- 
- 
-static void AfiseazaTabla(int[,] tabla) // Afisarea tablii: 0 - celula goala; 1 - X; 2 - O;
+  
+static void AfiseazaTabla(int[,] tabla) 
 {
     for (int i = 0; i < tabla.GetLength(0); i++)
     {       
